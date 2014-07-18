@@ -9,9 +9,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.radiusnetworks.ibeacon.IBeacon;
@@ -27,6 +27,9 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 	private static final String BLUETOOTH_UUID = "2b229de0-0e7c-11e4-9191-0800200c9a66";
 	private static final String BLUETOOTH_DEVICE_MAC_ADDRESS = "BC:F5:AC:46:F2:B9";
 	
+	public static final String EVENT_LOG = "EVENT_LOG";
+	public static final String MESSAGE = "MESSAGE";
+	
 	private IBeaconManager beaconMgr;
 	private Region region = new Region(UNIQUE_ID, ESTIMOTE_UUID, 99, 13928);;
 	
@@ -35,14 +38,21 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 	
 	private boolean ranging = false;
 
+	public class LocalBinder extends Binder {
+		public IBeaconService getService() {
+			return IBeaconService.this;
+		}
+	}
+	private final IBinder binder = new LocalBinder();
+	
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
+		return binder;
 	}
 
 	@Override
 	public void onIBeaconServiceConnect() {
+		sendMessageIntent("beacon init");
 		setupRangeNotifier();
 		startRanging();
 	}
@@ -82,6 +92,7 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 					return;
 				IBeacon beacon = beaconsInRange.iterator().next();
 				if (beacon.getAccuracy() < 3.0 && ranging) {
+					sendMessageIntent("Found beacon");
 					ranging = false;
 					
 					notifyBluetoothServerSockets();
@@ -89,6 +100,7 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 					try {
 						beaconMgr.stopRangingBeaconsInRegion(region);
 					} catch (RemoteException e) {
+						sendMessageIntent("Error stop ranging");
 					}
 				}
 			}
@@ -99,7 +111,7 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 		try {
 			beaconMgr.startRangingBeaconsInRegion(region);
 		} catch (RemoteException e) {
-			Log.i("sitter", "error start ranging");
+			sendMessageIntent("Error start ranging");
 		}
 	}
 	
@@ -109,18 +121,23 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 		
 		device = adapter.getRemoteDevice(BLUETOOTH_DEVICE_MAC_ADDRESS);
 		
-		Log.i("sitter", device.getBondState() + ", " + device.getName());
-		
 		while (true) {
 			try {
 				socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(BLUETOOTH_UUID));
 				socket.connect();
 			} catch (IOException e) {
-				e.printStackTrace();
+				sendMessageIntent("Cannot connect to bluetooth");
 				continue;
 			}
+			sendMessageIntent("Bluetooth connection successful");
 			break;
 		}
 		
+	}
+	
+	private void sendMessageIntent(String message) {
+		Intent broadcastIntent = new Intent(EVENT_LOG);
+		broadcastIntent.putExtra(MESSAGE, message);
+		sendBroadcast(broadcastIntent);
 	}
 }
