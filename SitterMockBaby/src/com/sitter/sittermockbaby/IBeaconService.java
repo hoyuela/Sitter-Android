@@ -25,7 +25,7 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 	private static final String ESTIMOTE_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
 	private static final String UNIQUE_ID = "myUniqueId";
 	private static final String BLUETOOTH_UUID = "2b229de0-0e7c-11e4-9191-0800200c9a66";
-	private static final String BLUETOOTH_DEVICE_MAC_ADDRESS = "test for now";
+	private static final String BLUETOOTH_DEVICE_MAC_ADDRESS = "BC:F5:AC:46:F2:B9";
 	
 	private IBeaconManager beaconMgr;
 	private Region region = new Region(UNIQUE_ID, ESTIMOTE_UUID, 99, 13928);;
@@ -72,6 +72,8 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 	}
 	
 	private void setupRangeNotifier() {
+		ranging = true;
+		
 		beaconMgr.setRangeNotifier(new RangeNotifier() {
 
 			@Override
@@ -102,13 +104,23 @@ public class IBeaconService extends Service implements IBeaconConsumer {
 	}
 	
 	private void notifyBluetoothServerSockets() {
-		device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(BLUETOOTH_DEVICE_MAC_ADDRESS);
+		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		adapter.cancelDiscovery();
 		
-		try {
-			socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BLUETOOTH_UUID));
-			socket.connect();
-		} catch (IOException e) {
-			e.printStackTrace();
+		device = adapter.getRemoteDevice(BLUETOOTH_DEVICE_MAC_ADDRESS);
+		
+		Log.i("sitter", device.getBondState() + ", " + device.getName());
+		
+		while (true) {
+			try {
+				socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(BLUETOOTH_UUID));
+				socket.connect();
+			} catch (IOException e) {
+				e.printStackTrace();
+				continue;
+			}
+			break;
 		}
+		
 	}
 }

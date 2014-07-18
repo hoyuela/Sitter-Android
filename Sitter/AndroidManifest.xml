@@ -18,6 +18,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity 
+            android:name=".ProximityTestActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,6 +37,8 @@
             android:name="com.solstice.sitterble.WeightSensorService"
             android:enabled="true">
         </service>
+        
+         <service android:name="com.solstice.sitterble.BluetoothProximityService"/>
         
          <service
             android:name="com.solstice.sitterble.BLEService"
