@@ -1,7 +1,6 @@
 package com.solstice.sitter;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.solstice.sitterble.BluetoothProximityService;
 
@@ -57,9 +55,9 @@ public class ProximityTestActivity extends Activity {
 		bindService(new Intent(getApplicationContext(), BluetoothProximityService.class), proxServiceConnection, BIND_AUTO_CREATE);
 		registerReceiver(proximityReciever, createIntentFilter());
 		
-		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+//		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		
-		((TextView) findViewById(R.id.label)).setText(adapter.getAddress());
+//		((TextView) findViewById(R.id.label)).setText(adapter.getAddress());
 	}
 
 	@Override

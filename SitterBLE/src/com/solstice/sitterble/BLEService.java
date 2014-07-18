@@ -43,6 +43,8 @@ public class BLEService extends Service {
 	private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+
+			Log.i(TAG, "onConnectionStateChange status: " + status + " and newState: " + newState);
 			String intentAction;
 
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -54,6 +56,7 @@ public class BLEService extends Service {
 				intentAction = ACTION_GATT_DISCONNECTED;
 				Log.i(TAG, "Disconnected from GATT server.");
 				broadcastUpdate(intentAction);
+				Log.i(TAG, "GATT disconnected, reconnecting");
 				connect(mBluetoothDeviceAddress);
 			}
 		}
@@ -78,7 +81,6 @@ public class BLEService extends Service {
 
 		@Override
 		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-			Log.i(TAG, "onCharacteristicRead status is: " + status);
 			if (status == BluetoothGatt.GATT_SUCCESS) {
 				broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
 			}
@@ -86,7 +88,6 @@ public class BLEService extends Service {
 
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-			Log.i(TAG, "onCharacteristicChanged ");
 			broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
 		}
 	};
@@ -172,12 +173,12 @@ public class BLEService extends Service {
 			Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
 			return false;
 		}
-
 		// Previously connected device. Try to reconnect.
 		if (mBluetoothDeviceAddress != null
 				&& address.equals(mBluetoothDeviceAddress)
 				&& mBluetoothGatt != null) {
 			Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+			// mBluetoothGatt.disconnect();
 			if (mBluetoothGatt.connect()) {
 				return true;
 			} else {
@@ -193,7 +194,7 @@ public class BLEService extends Service {
 		// We want to directly connect to the device, so we are setting the
 		// autoConnect
 		// parameter to false.
-		mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+		mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
 		Log.d(TAG, "Trying to create a new connection.");
 		mBluetoothDeviceAddress = address;
 
@@ -263,8 +264,7 @@ public class BLEService extends Service {
 	 * @param enabled
 	 *            If true, enable notification. False otherwise.
 	 */
-	public void setCharacteristicNotification(
-			BluetoothGattCharacteristic characteristic, boolean enabled) {
+	public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
 		if (mBluetoothAdapter == null || mBluetoothGatt == null) {
 			Log.w(TAG, "BluetoothAdapter not initialized");
 			return;

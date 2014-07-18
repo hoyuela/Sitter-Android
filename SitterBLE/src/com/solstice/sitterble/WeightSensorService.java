@@ -1,7 +1,7 @@
 package com.solstice.sitterble;
 
-import java.io.UnsupportedEncodingException;
-
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,11 +20,23 @@ import android.widget.Toast;
 public class WeightSensorService extends Service {
 	private static final String TAG = WeightSensorService.class.getCanonicalName();
 
-	public static String EVENT_WEIGHT_SENSOR_CONNECTED = "EVENT_WEIGHT_SENSOR_CONNECTED";
-	public static String EVENT_WEIGHT_SENSOR_DISCONNECTED = "EVENT_WEIGHT_SENSOR_DISCONNECTED";
-	public static String EVENT_WEIGHT_SENSOR_WEIGHT_PRESENT = "EVENT_WEIGHT_SENSOR_WEIGHT_PRESENT";
-	public static String EVENT_WEIGHT_SENSOR_WEIGHT_GONE = "EVENT_WEIGHT_SENSOR_WEIGHT_GONE";
-	public static String EVENT_WEIGHT_SENSOR_TEMPERATURE = "EVENT_WEIGHT_SENSOR_TEMPERATURE";
+	public static String EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN = "EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN";
+	public static String EVENT_WEIGHT_SENSOR_BABY_OVERHEATING = "EVENT_WEIGHT_SENSOR_BABY_OVERHEATING";
+
+	private int DISCONNECT_TIMEOUT = 10000;
+	private boolean weightPresent = false;
+	private Handler handler = new Handler();
+	private Runnable disconnectTimout = new Runnable() {
+		
+		@Override
+		public void run() {
+			Log.i(TAG, "Disconnect timeout");
+			if(weightPresent) {
+				Intent intent = new Intent(EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN);
+				sendBroadcast(intent);
+			}
+		}
+	};
 
 	public class LocalBinder extends Binder {
 		public WeightSensorService getService() {
@@ -60,42 +73,48 @@ public class WeightSensorService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			final String action = intent.getAction();
 
-			Log.i(TAG, "Weight sensor service received BLEService broadcast with action " + action);
-
-			Intent broadcastIntent;
 
 			if (BLEService.ACTION_GATT_CONNECTED.equals(action)) {
 				Toast.makeText(getApplicationContext(), "Gatt Connected", Toast.LENGTH_SHORT).show();
-				broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_CONNECTED);
-				sendBroadcast(broadcastIntent);
+				handler.removeCallbacks(disconnectTimout);
 			} else if (BLEService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
 				Toast.makeText(getApplicationContext(), "Gatt services discovered", Toast.LENGTH_SHORT).show();
 				getGattService(bluetoothLeService.getSupportedGattService());
 			} else if (BLEService.ACTION_GATT_DISCONNECTED.equals(action)) {
 				Toast.makeText(getApplicationContext(), "Gatt Disconnected", Toast.LENGTH_SHORT).show();
-				broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_DISCONNECTED);
-				sendBroadcast(broadcastIntent);
+				handler.postDelayed(disconnectTimout, DISCONNECT_TIMEOUT);
 			} else if (BLEService.ACTION_DATA_AVAILABLE.equals(action)) {
 				Toast.makeText(getApplicationContext(), "Gatt received data", Toast.LENGTH_SHORT).show();
 				Log.i(TAG, "Got data in activity");
 
-				try {
-					String data = new String(intent.getByteArrayExtra(BLEService.EXTRA_DATA), "UTF-8");
-					Log.i(TAG, "Data is " + data);
+				String data = new String(intent.getByteArrayExtra(BLEService.EXTRA_DATA));
+				Log.i(TAG, "Data is " + data);
 
-					String event;
-					boolean weightPresent = true;
-					if (weightPresent) {
-						event = EVENT_WEIGHT_SENSOR_WEIGHT_PRESENT;
-					} else {
-						event = EVENT_WEIGHT_SENSOR_WEIGHT_GONE;
+				String[] parts = data.split(":");
+				if(parts.length > 1) {
+					if("ZForce".equals(parts[0])) {
+						String forceString = parts[1];
+						try {
+							int force = Integer.parseInt(forceString);
+							weightPresent = force > 50;
+							Log.i(TAG, "Weight present: " + weightPresent);
+						} catch (NumberFormatException e) {
+							Log.e(TAG, "Couldn't parse force value: " + forceString, e);
+						}
+					} else if("ZTemp".equals(parts[0])) {
+						String tempString = parts[1];
+						try {
+							int temp = Integer.parseInt(tempString);
+							Log.i(TAG, "Temp: " + temp);
+							if (temp > 28) {
+								Intent broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
+								sendBroadcast(broadcastIntent);
+							}
+
+						} catch (NumberFormatException e) {
+							Log.e(TAG, "Couldn't parse temp value: " + tempString, e);
+						}
 					}
-
-					broadcastIntent = new Intent(event);
-					broadcastIntent.putExtra(EVENT_WEIGHT_SENSOR_TEMPERATURE, 70);
-					sendBroadcast(broadcastIntent);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -109,6 +128,7 @@ public class WeightSensorService extends Service {
 		if (characteristicRx != null) {
 			Log.i(TAG, "Weight sensor service subscribing to characteristic notifications");
 			bluetoothLeService.setCharacteristicNotification(characteristicRx, true);
+			bluetoothLeService.readCharacteristic(characteristicRx);
 		}
 	}
 
@@ -138,8 +158,18 @@ public class WeightSensorService extends Service {
 		super.onCreate();
 		Log.i(TAG, "Weight sensor service created");
 		Toast.makeText(getApplicationContext(), "Weight Sensor Service Created", Toast.LENGTH_SHORT).show();
-		bindService(new Intent(this, BLEService.class), bleServiceConnection, BIND_AUTO_CREATE);
+		if (!bindService(new Intent(this, BLEService.class), bleServiceConnection, BIND_AUTO_CREATE))
+			Log.w(TAG, "Error starting BLEService from Weight sensor service");
 		registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
+
+		Notification n = new Notification.Builder(this)
+				.setContentTitle("Weight sensor service")
+				.setContentText("Running")
+				.setSmallIcon(R.drawable.ic_launcher)
+				.setAutoCancel(true).build();
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.notify(0, n);
 	}
 
 	@Override
