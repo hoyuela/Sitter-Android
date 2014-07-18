@@ -17,13 +17,22 @@
         android:text="push me" />
     -->
 
+    <ImageView
+        android:id="@+id/menu_button"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/menuicon" />
+
     <TextView
         android:id="@+id/welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/menu_button"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:text="Welcome\nKrista!"
         android:textColor="@color/purple"
         android:textSize="24sp" />
@@ -34,7 +43,8 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_below="@id/welcome"
-        android:src="@drawable/photo" />
+        android:layout_marginTop="-25dp"
+        android:src="@drawable/joshua" />
 
     <com.sitter.widgets.ChildProfileView
         android:id="@+id/child_02"
@@ -42,7 +52,7 @@
         android:layout_height="100dp"
         android:layout_below="@id/child_01"
         android:layout_marginTop="-50dp"
-        android:src="@drawable/photo" />
+        android:src="@drawable/emma" />
 
     <com.sitter.widgets.ChildProfileView
         android:id="@+id/child_03"
@@ -50,6 +60,7 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_below="@id/child_02"
-        android:src="@drawable/photo" />
+        android:layout_marginTop="-25dp"
+        android:src="@drawable/francesca" />
 
 </RelativeLayout>

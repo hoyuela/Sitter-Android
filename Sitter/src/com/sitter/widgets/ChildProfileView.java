@@ -34,7 +34,7 @@ public class ChildProfileView extends ImageView {
 	/** Pixels to offset the name bubble by. Need to be added to width/height. */
 	private int NAME_BUBBLE_OFFSET = 50;
 	private int NAME_BUBBLE_RADIUS = 150;
-	private int NAME_BUBBLE_TEXTSIZE = 16;
+	private int NAME_BUBBLE_TEXTSIZE = 12;
 
 	private int textSize;
 	private int textBubbleRadius;
@@ -246,9 +246,13 @@ public class ChildProfileView extends ImageView {
 				textBubbleRadius / 2.0f, whitePaint);
 
 		if (childName != null) {
-			canvas.drawText(childName, smallCircleWidthOffset + 20,
+			int bubbleWidth = (int) (textBubbleRadius / 2.0f);
+			int textWidth = (int) (textPaint.measureText(childName)/ 2.0f);
+			int offset = (bubbleWidth - textWidth) + smallCircleWidthOffset;
+			
+			canvas.drawText(childName, offset,
 					smallCircleHeightOffset + textBubbleRadius
-							- (density * (textSize / 2.0f)), textPaint);
+							- (density * (textSize / 1.7f)), textPaint);
 		}
 	}
 

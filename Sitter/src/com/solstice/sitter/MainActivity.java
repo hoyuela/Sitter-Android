@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 
+import com.sitter.widgets.ActivityMenu;
 import com.sitter.widgets.ChildProfileView;
 import com.sitter.widgets.ChildProfileView.Position;
 import com.solstice.sitter.notifications.NotificationManager;
@@ -26,6 +28,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private ChildProfileView childOne;
 	private ChildProfileView childTwo;
 	private ChildProfileView childThree;
+	private ImageView menuButton;
 
 	private static final String TAG = MainActivity.class.getCanonicalName();
 	private WeightSensorService weightSensorService;
@@ -99,13 +102,16 @@ public class MainActivity extends Activity implements OnClickListener {
 		childThree = (ChildProfileView) findViewById(R.id.child_03);
 		updateChildThree(childThree);
 		childOne.setOnClickListener(this);
+		
+		menuButton = (ImageView) findViewById(R.id.menu_button);
+		menuButton.setOnClickListener(this);	
 	}
 
 	private void updateChildOne(ChildProfileView iv) {
 		iv.setBorderColor(getResources().getColor(R.color.red));
 		iv.setBorderWidth(16);
 		iv.setChildNamePosition(Position.UPPER_RIGHT);
-		iv.setChildName("Steve");
+		iv.setChildName("Joshua");
 	}
 
 	private void updateChildTwo(ChildProfileView iv) {
@@ -113,15 +119,15 @@ public class MainActivity extends Activity implements OnClickListener {
 		iv.setBorderWidth(20);
 		iv.setChildNamePosition(Position.UPPER_LEFT);
 		iv.setBubbleScaleSize(1.25f);
-		iv.setChildName("Sam");
+		iv.setChildName("Emma");
 	}
 
 	private void updateChildThree(ChildProfileView iv) {
-		 iv.setBorderColor(getResources().getColor(R.color.purple));
-		 iv.setBorderWidth(18);
-		 iv.setChildNamePosition(Position.LOWER_RIGHT);
-		 iv.setBubbleScaleSize(1.5f);
-		 iv.setChildName("Derrick");
+		iv.setBorderColor(getResources().getColor(R.color.purple));
+		iv.setBorderWidth(18);
+		iv.setChildNamePosition(Position.LOWER_RIGHT);
+		iv.setBubbleScaleSize(1.5f);
+		iv.setChildName("Francesca");
 	}
 
 
@@ -173,9 +179,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		return intentFilter;
 	}
 
-	@Override
 	public void onClick(View view) {
-		NotificationManager.stop();
+		switch (view.getId()) {
+
+		case R.id.menu_button:
+			if (!ActivityMenu.isMenuOpen()) {
+				ActivityMenu activityMenu = new ActivityMenu(this);
+				activityMenu.show();
+			}
+			break;
+
+		default:
+			NotificationManager.stop();
+		}
 	}
 	
 
