@@ -36,10 +36,6 @@
         
          <service android:name="com.solstice.sitterble.BluetoothProximityService"/>
         
-         <service
-            android:name="com.solstice.sitterble.BLEService"
-            android:enabled="true">
-         </service>
     </application>
 
 </manifest>

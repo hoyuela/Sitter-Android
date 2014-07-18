@@ -75,16 +75,16 @@ public class WeightSensorService extends Service {
 
 
 			if (BLEService.ACTION_GATT_CONNECTED.equals(action)) {
-				Toast.makeText(getApplicationContext(), "Gatt Connected", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
 				handler.removeCallbacks(disconnectTimout);
 			} else if (BLEService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-				Toast.makeText(getApplicationContext(), "Gatt services discovered", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Discovered", Toast.LENGTH_SHORT).show();
 				getGattService(bluetoothLeService.getSupportedGattService());
 			} else if (BLEService.ACTION_GATT_DISCONNECTED.equals(action)) {
-				Toast.makeText(getApplicationContext(), "Gatt Disconnected", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Disconnected", Toast.LENGTH_SHORT).show();
 				handler.postDelayed(disconnectTimout, DISCONNECT_TIMEOUT);
 			} else if (BLEService.ACTION_DATA_AVAILABLE.equals(action)) {
-				Toast.makeText(getApplicationContext(), "Gatt received data", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Data", Toast.LENGTH_SHORT).show();
 				Log.i(TAG, "Got data in activity");
 
 				String data = new String(intent.getByteArrayExtra(BLEService.EXTRA_DATA));
@@ -97,6 +97,7 @@ public class WeightSensorService extends Service {
 						try {
 							int force = Integer.parseInt(forceString);
 							weightPresent = force > 50;
+							Toast.makeText(getApplicationContext(), "Force: " + force, Toast.LENGTH_SHORT).show();
 							Log.i(TAG, "Weight present: " + weightPresent);
 						} catch (NumberFormatException e) {
 							Log.e(TAG, "Couldn't parse force value: " + forceString, e);
@@ -106,6 +107,7 @@ public class WeightSensorService extends Service {
 						try {
 							int temp = Integer.parseInt(tempString);
 							Log.i(TAG, "Temp: " + temp);
+							Toast.makeText(getApplicationContext(), "Temp" + temp, Toast.LENGTH_SHORT).show();
 							if (temp > 28) {
 								Intent broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
 								sendBroadcast(broadcastIntent);
