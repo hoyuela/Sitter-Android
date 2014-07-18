@@ -54,6 +54,7 @@ public class BLEService extends Service {
 				intentAction = ACTION_GATT_DISCONNECTED;
 				Log.i(TAG, "Disconnected from GATT server.");
 				broadcastUpdate(intentAction);
+				Log.i(TAG, "GATT disconnected, reconnecting");
 				connect(mBluetoothDeviceAddress);
 			}
 		}
@@ -172,17 +173,17 @@ public class BLEService extends Service {
 			Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
 			return false;
 		}
-
 		// Previously connected device. Try to reconnect.
 		if (mBluetoothDeviceAddress != null
 				&& address.equals(mBluetoothDeviceAddress)
 				&& mBluetoothGatt != null) {
 			Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-			if (mBluetoothGatt.connect()) {
-				return true;
-			} else {
-				return false;
-			}
+			mBluetoothGatt.disconnect();
+			// if (mBluetoothGatt.connect()) {
+			// return true;
+			// } else {
+			// return false;
+			// }
 		}
 
 		final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
@@ -193,7 +194,7 @@ public class BLEService extends Service {
 		// We want to directly connect to the device, so we are setting the
 		// autoConnect
 		// parameter to false.
-		mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+		mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
 		Log.d(TAG, "Trying to create a new connection.");
 		mBluetoothDeviceAddress = address;
 
@@ -263,8 +264,7 @@ public class BLEService extends Service {
 	 * @param enabled
 	 *            If true, enable notification. False otherwise.
 	 */
-	public void setCharacteristicNotification(
-			BluetoothGattCharacteristic characteristic, boolean enabled) {
+	public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
 		if (mBluetoothAdapter == null || mBluetoothGatt == null) {
 			Log.w(TAG, "BluetoothAdapter not initialized");
 			return;
@@ -273,7 +273,7 @@ public class BLEService extends Service {
 
 		if (UUID_BLE_SHIELD_RX.equals(characteristic.getUuid())) {
 			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+			descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
 			mBluetoothGatt.writeDescriptor(descriptor);
 		}
 	}

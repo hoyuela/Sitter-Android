@@ -81,10 +81,8 @@ public class MainActivity extends Activity {
 	private static IntentFilter makeWeightSensorIntentFilter() {
 		final IntentFilter intentFilter = new IntentFilter();
 
-		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_CONNECTED);
-		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_DISCONNECTED);
-		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_WEIGHT_GONE);
-		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_WEIGHT_PRESENT);
+		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN);
+		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
 
 		return intentFilter;
 	}
