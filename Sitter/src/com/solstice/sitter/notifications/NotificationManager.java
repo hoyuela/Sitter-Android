@@ -32,9 +32,8 @@ public class NotificationManager {
 		viewIntent.putExtra(EXTRA_EVENT_ID, EVENT_ID);
 		PendingIntent viewPendingIntent =
 		        PendingIntent.getActivity(activity, 0, viewIntent, 0);
-		
-		//Intent dismissIntent = new Intent("DISMISS_ALARM_INTENT");
-		
+		PendingIntent dismissIntent = DismissNotificationReceiver.getDeleteIntent(activity);
+				
 	
 		String bigText = "";
 		String child = "Joshua";
@@ -56,6 +55,7 @@ public class NotificationManager {
 		BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
 				bigStyle.bigText(bigText);
 
+				
 		NotificationCompat.Builder notificationBuilder =
 		        new NotificationCompat.Builder(activity)
 				.setLargeIcon(BitmapFactory.decodeResource(activity.getResources(), R.drawable.joshua_watchbackground))
@@ -66,8 +66,9 @@ public class NotificationManager {
 		        .setVibrate(new long[] { 0, 2000, 500, 2000, 500, 2000 })
 		        .setContentIntent(viewPendingIntent)
 		        .setLights(Color.RED, 3000, 3000)
-		        .setStyle(bigStyle);
-				//.addAction(R.drawable.ic_launcher,"Dismiss", mapPendingIntent);
+		        .setStyle(bigStyle)
+		        .setDeleteIntent(dismissIntent)
+		        .addAction(R.drawable.ic_launcher,"Clear", dismissIntent);
 
 		// Get an instance of the NotificationManager service
 		NotificationManagerCompat notificationManager =
