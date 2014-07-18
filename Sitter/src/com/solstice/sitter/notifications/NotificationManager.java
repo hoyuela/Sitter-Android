@@ -52,8 +52,8 @@ public class NotificationManager {
 
 		NotificationCompat.Builder notificationBuilder =
 		        new NotificationCompat.Builder(activity)
-				.setLargeIcon(BitmapFactory.decodeResource(activity.getResources(), R.drawable.watchbackground_320x320))
-		        .setSmallIcon(R.drawable.joshua_image)
+				.setLargeIcon(BitmapFactory.decodeResource(activity.getResources(), R.drawable.joshua_watchbackground))
+		        .setSmallIcon(R.drawable.aupaird_ic)
 		        .setContentTitle(child)
 		        .setContentText(contentText)
 		        .setPriority(NotificationCompat.PRIORITY_MAX)

@@ -12,7 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/joshua_image"
+        android:icon="@drawable/aupaird_ic"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
