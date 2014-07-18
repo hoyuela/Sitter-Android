@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.BigTextStyle;
@@ -32,9 +33,8 @@ public class NotificationManager {
 		viewIntent.putExtra(EXTRA_EVENT_ID, EVENT_ID);
 		PendingIntent viewPendingIntent =
 		        PendingIntent.getActivity(activity, 0, viewIntent, 0);
-		
-		//Intent dismissIntent = new Intent("DISMISS_ALARM_INTENT");
-		
+		PendingIntent dismissIntent = DismissNotificationReceiver.getDeleteIntent(activity);
+				
 	
 		String bigText = "";
 		String child = "Joshua";
@@ -56,6 +56,10 @@ public class NotificationManager {
 		BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
 				bigStyle.bigText(bigText);
 
+				
+	    Uri sound = Uri.parse("android.resource://" +"com.solstice.sitter" + "/" + R.raw.baby_crying);
+
+				
 		NotificationCompat.Builder notificationBuilder =
 		        new NotificationCompat.Builder(activity)
 				.setLargeIcon(BitmapFactory.decodeResource(activity.getResources(), R.drawable.joshua_watchbackground))
@@ -63,11 +67,13 @@ public class NotificationManager {
 		        .setContentTitle(child)
 		        .setContentText(contentText)
 		        .setPriority(NotificationCompat.PRIORITY_MAX)
+		        .setSound(sound)
 		        .setVibrate(new long[] { 0, 2000, 500, 2000, 500, 2000 })
 		        .setContentIntent(viewPendingIntent)
 		        .setLights(Color.RED, 3000, 3000)
-		        .setStyle(bigStyle);
-				//.addAction(R.drawable.ic_launcher,"Dismiss", mapPendingIntent);
+		        .setStyle(bigStyle)
+		        .setDeleteIntent(dismissIntent)
+		        .addAction(R.drawable.checkmark,"Clear", dismissIntent);
 
 		// Get an instance of the NotificationManager service
 		NotificationManagerCompat notificationManager =
@@ -76,7 +82,7 @@ public class NotificationManager {
 	
 		// Build the notification and issues it with notification manager.
 		notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
-		PlayDtfmTone(activity);
+		//PlayDtfmTone(activity);
 			
 		if( !hasStopped ) {
 			customHandler.postDelayed(updateTimerThread, 5000);
