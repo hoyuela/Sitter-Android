@@ -32,6 +32,9 @@ public class NotificationManager {
 		viewIntent.putExtra(EXTRA_EVENT_ID, EVENT_ID);
 		PendingIntent viewPendingIntent =
 		        PendingIntent.getActivity(activity, 0, viewIntent, 0);
+		
+		//Intent dismissIntent = new Intent("DISMISS_ALARM_INTENT");
+		
 	
 		String bigText = "";
 		String child = "Joshua";
@@ -41,7 +44,10 @@ public class NotificationManager {
 			bigText = "Don't Forget Me!";
 			break;
 		case HOME_NOTIFICATION:
-			bigText = "Up to no good";
+			bigText = "I'm Up to no good!";
+			break;
+		case TEMPERATURE_NOTIFICATION:
+			bigText = "I'm feeling hot...";
 			break;
 		}
 		
@@ -61,6 +67,7 @@ public class NotificationManager {
 		        .setContentIntent(viewPendingIntent)
 		        .setLights(Color.RED, 3000, 3000)
 		        .setStyle(bigStyle);
+				//.addAction(R.drawable.ic_launcher,"Dismiss", mapPendingIntent);
 
 		// Get an instance of the NotificationManager service
 		NotificationManagerCompat notificationManager =

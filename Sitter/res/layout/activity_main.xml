@@ -1,28 +1,55 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.solstice.sitter.MainActivity" >  
-    
-    <Button
-        android:id="@+id/pressme"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="Press Me"
-        />
-    
-    <Button
-        android:id="@+id/stopme"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="Stop Me"
-        />
-    
-    <Button
-        android:id="@+id/openmenu"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="Open"
-        />
+    android:background="@drawable/widerbackground"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.solstice.sitter.MainActivity" >
 
-</LinearLayout>
+    <!--
+    <Button
+        android:id="@+id/test_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="push me" />
+    -->
+
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:text="Welcome\nKrista!"
+        android:textColor="@color/purple"
+        android:textSize="24sp" />
+
+    <com.sitter.widgets.ChildProfileView
+        android:id="@+id/child_01"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/welcome"
+        android:src="@drawable/photo" />
+
+    <com.sitter.widgets.ChildProfileView
+        android:id="@+id/child_02"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/child_01"
+        android:layout_marginTop="-50dp"
+        android:src="@drawable/photo" />
+
+    <com.sitter.widgets.ChildProfileView
+        android:id="@+id/child_03"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/child_02"
+        android:src="@drawable/photo" />
+
+</RelativeLayout>
