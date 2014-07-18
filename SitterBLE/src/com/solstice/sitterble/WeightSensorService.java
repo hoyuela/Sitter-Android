@@ -1,7 +1,5 @@
 package com.solstice.sitterble;
 
-import java.io.UnsupportedEncodingException;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -75,7 +73,6 @@ public class WeightSensorService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			final String action = intent.getAction();
 
-			Log.i(TAG, "Weight sensor service received BLEService broadcast with action " + action);
 
 			if (BLEService.ACTION_GATT_CONNECTED.equals(action)) {
 				Toast.makeText(getApplicationContext(), "Gatt Connected", Toast.LENGTH_SHORT).show();
@@ -90,17 +87,34 @@ public class WeightSensorService extends Service {
 				Toast.makeText(getApplicationContext(), "Gatt received data", Toast.LENGTH_SHORT).show();
 				Log.i(TAG, "Got data in activity");
 
-				try {
-					String data = new String(intent.getByteArrayExtra(BLEService.EXTRA_DATA), "UTF-8");
-					Log.i(TAG, "Data is " + data);
+				String data = new String(intent.getByteArrayExtra(BLEService.EXTRA_DATA));
+				Log.i(TAG, "Data is " + data);
 
-					float temp = 75;
-					if (temp > 72) {
-						Intent broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
-						sendBroadcast(broadcastIntent);
+				String[] parts = data.split(":");
+				if(parts.length > 1) {
+					if("ZForce".equals(parts[0])) {
+						String forceString = parts[1];
+						try {
+							int force = Integer.parseInt(forceString);
+							weightPresent = force > 50;
+							Log.i(TAG, "Weight present: " + weightPresent);
+						} catch (NumberFormatException e) {
+							Log.e(TAG, "Couldn't parse force value: " + forceString, e);
+						}
+					} else if("ZTemp".equals(parts[0])) {
+						String tempString = parts[1];
+						try {
+							int temp = Integer.parseInt(tempString);
+							Log.i(TAG, "Temp: " + temp);
+							if (temp > 28) {
+								Intent broadcastIntent = new Intent(EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
+								sendBroadcast(broadcastIntent);
+							}
+
+						} catch (NumberFormatException e) {
+							Log.e(TAG, "Couldn't parse temp value: " + tempString, e);
+						}
 					}
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -114,6 +128,7 @@ public class WeightSensorService extends Service {
 		if (characteristicRx != null) {
 			Log.i(TAG, "Weight sensor service subscribing to characteristic notifications");
 			bluetoothLeService.setCharacteristicNotification(characteristicRx, true);
+			bluetoothLeService.readCharacteristic(characteristicRx);
 		}
 	}
 
@@ -143,7 +158,8 @@ public class WeightSensorService extends Service {
 		super.onCreate();
 		Log.i(TAG, "Weight sensor service created");
 		Toast.makeText(getApplicationContext(), "Weight Sensor Service Created", Toast.LENGTH_SHORT).show();
-		bindService(new Intent(this, BLEService.class), bleServiceConnection, BIND_AUTO_CREATE);
+		if (!bindService(new Intent(this, BLEService.class), bleServiceConnection, BIND_AUTO_CREATE))
+			Log.w(TAG, "Error starting BLEService from Weight sensor service");
 		registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
 
 		Notification n = new Notification.Builder(this)

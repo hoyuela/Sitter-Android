@@ -98,7 +98,6 @@ public class MainActivity extends Activity {
 	
 	public void onResume() {
 		super.onResume();
-		startService(new Intent(MainActivity.this, WeightSensorService.class));
 		bindService(new Intent(this, WeightSensorService.class), weightSensorServiceConnection, BIND_AUTO_CREATE);
 		registerReceiver(weightSensorReceiver, makeWeightSensorIntentFilter());
 	}

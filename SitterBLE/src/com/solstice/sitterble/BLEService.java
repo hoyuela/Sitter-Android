@@ -43,6 +43,8 @@ public class BLEService extends Service {
 	private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+
+			Log.i(TAG, "onConnectionStateChange status: " + status + " and newState: " + newState);
 			String intentAction;
 
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -79,7 +81,6 @@ public class BLEService extends Service {
 
 		@Override
 		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-			Log.i(TAG, "onCharacteristicRead status is: " + status);
 			if (status == BluetoothGatt.GATT_SUCCESS) {
 				broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
 			}
@@ -87,7 +88,6 @@ public class BLEService extends Service {
 
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-			Log.i(TAG, "onCharacteristicChanged ");
 			broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
 		}
 	};
@@ -178,12 +178,12 @@ public class BLEService extends Service {
 				&& address.equals(mBluetoothDeviceAddress)
 				&& mBluetoothGatt != null) {
 			Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-			mBluetoothGatt.disconnect();
-			// if (mBluetoothGatt.connect()) {
-			// return true;
-			// } else {
-			// return false;
-			// }
+			// mBluetoothGatt.disconnect();
+			if (mBluetoothGatt.connect()) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
@@ -273,7 +273,7 @@ public class BLEService extends Service {
 
 		if (UUID_BLE_SHIELD_RX.equals(characteristic.getUuid())) {
 			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-			descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 			mBluetoothGatt.writeDescriptor(descriptor);
 		}
 	}
