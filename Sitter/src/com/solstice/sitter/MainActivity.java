@@ -18,6 +18,7 @@ import com.sitter.widgets.ChildProfileView;
 import com.sitter.widgets.ChildProfileView.Position;
 import com.solstice.sitter.notifications.NotificationManager;
 import com.solstice.sitter.notifications.NotificationType;
+import com.solstice.sitterble.BluetoothProximityService;
 import com.solstice.sitterble.WeightSensorService;
 
 
@@ -28,6 +29,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private static final String TAG = MainActivity.class.getCanonicalName();
 	private WeightSensorService weightSensorService;
+	private BluetoothProximityService proxService;
 
 	private final ServiceConnection weightSensorServiceConnection = new ServiceConnection() {
 
@@ -41,6 +43,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void onServiceDisconnected(ComponentName componentName) {
 			Log.i(TAG, "Service disconnected from activity: " + componentName.flattenToShortString());
 			weightSensorService = null;
+		}
+	};
+	
+	private final ServiceConnection proxServiceConnection = new ServiceConnection() {
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			proxService = null;
+		}
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			proxService = ((BluetoothProximityService.LocalBinder) service).getService();
 		}
 	};
 
@@ -57,7 +72,15 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 		}
 	};
+	
+	private final BroadcastReceiver proximityReciever = new BroadcastReceiver() {
 
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			NotificationManager.notify((MainActivity)context, NotificationType.HOME_NOTIFICATION);
+		}
+		
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +136,9 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onResume();
 		bindService(new Intent(this, WeightSensorService.class), weightSensorServiceConnection, BIND_AUTO_CREATE);
 		registerReceiver(weightSensorReceiver, makeWeightSensorIntentFilter());
+		
+		bindService(new Intent(getApplicationContext(), BluetoothProximityService.class), proxServiceConnection, BIND_AUTO_CREATE);
+		registerReceiver(proximityReciever, makeBluetoothProximityIntentFilter());
 	}
 
 	@Override
@@ -120,6 +146,9 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onPause();
 		unbindService(weightSensorServiceConnection);
 		unregisterReceiver(weightSensorReceiver);
+		
+		unbindService(proxServiceConnection);
+		unregisterReceiver(proximityReciever);
 	}
 
 	@Override
@@ -132,6 +161,14 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN);
 		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
+
+		return intentFilter;
+	}
+	
+	private IntentFilter makeBluetoothProximityIntentFilter() {
+		final IntentFilter intentFilter = new IntentFilter();
+
+		intentFilter.addAction(BluetoothProximityService.EVENT_PROXIMITY_ALERT);
 
 		return intentFilter;
 	}
