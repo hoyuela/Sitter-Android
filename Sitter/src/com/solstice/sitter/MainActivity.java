@@ -11,8 +11,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
+import com.sitter.widgets.ActivityMenu;
+import com.solstice.sitter.notifications.NotificationManager;
+import com.solstice.sitter.notifications.NotificationType;
 import com.solstice.sitterble.WeightSensorService;
+
 
 public class MainActivity extends Activity {
 
@@ -48,6 +55,37 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		final MainActivity activity = this;
+		Button button = (Button) this.findViewById(R.id.pressme);
+		button.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				NotificationManager.notify(activity, NotificationType.AUTOMOBILE_NOTIFICATION);
+			}
+		});
+		
+		Button button2 = (Button)this.findViewById(R.id.stopme);
+		button2.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				NotificationManager.stop();
+			}
+		});
+		
+		Button button3 = (Button)this.findViewById(R.id.openmenu);
+		button3.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if( !ActivityMenu.isMenuOpen() ) {
+					ActivityMenu activityMenu = new ActivityMenu(activity);
+					activityMenu.show();
+				}
+			}
+		});
 	}
 
 
@@ -88,4 +126,6 @@ public class MainActivity extends Activity {
 
 		return intentFilter;
 	}
+	
+
 }

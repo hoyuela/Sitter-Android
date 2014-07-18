@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Menu Item Attributes -->
+    <attr name="menuText" format="reference" />
+    <attr name="menuImage" format="reference" />
+    <attr name="menuImageSize" format="reference|float" />
+
+    <declare-styleable name="ActivityMenuItem">   
+        <attr name="menuText"/>
+        <attr name="menuImage"/>
+        <attr name="menuImageSize"/>
+    </declare-styleable>
+</resources>
