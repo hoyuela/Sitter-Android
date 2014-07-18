@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.sitter.widgets.ChildProfileView;
 import com.sitter.widgets.ChildProfileView.Position;
@@ -19,14 +21,13 @@ import com.solstice.sitter.notifications.NotificationType;
 import com.solstice.sitterble.WeightSensorService;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnClickListener {
 	private ChildProfileView childOne;
 	private ChildProfileView childTwo;
 	private ChildProfileView childThree;
 
 	private static final String TAG = MainActivity.class.getCanonicalName();
 	private WeightSensorService weightSensorService;
-	private boolean flag = true;
 
 	private final ServiceConnection weightSensorServiceConnection = new ServiceConnection() {
 
@@ -52,7 +53,7 @@ public class MainActivity extends Activity {
 			if( action.equalsIgnoreCase(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_FORGOTTEN) ) {
 				NotificationManager.notify((MainActivity)context, NotificationType.AUTOMOBILE_NOTIFICATION);
 			} else if( action.equalsIgnoreCase(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_OVERHEATING) ) {
-				NotificationManager.notify((MainActivity)context, NotificationType.TEMPERATURE_NOTIFICATION);
+				NotificationManager.notify((MainActivity) context, NotificationType.TEMPERATURE_NOTIFICATION);
 			}
 		}
 	};
@@ -66,12 +67,15 @@ public class MainActivity extends Activity {
 
 		childOne = (ChildProfileView) findViewById(R.id.child_01);
 		updateChildOne(childOne);
+		childOne.setOnClickListener(this);
 
 		childTwo = (ChildProfileView) findViewById(R.id.child_02);
 		updateChildTwo(childTwo);
+		childOne.setOnClickListener(this);
 
 		childThree = (ChildProfileView) findViewById(R.id.child_03);
 		updateChildThree(childThree);
+		childOne.setOnClickListener(this);
 	}
 
 	private void updateChildOne(ChildProfileView iv) {
@@ -121,7 +125,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		flag = false;
 	}
 
 	private static IntentFilter makeWeightSensorIntentFilter() {
@@ -131,6 +134,11 @@ public class MainActivity extends Activity {
 		intentFilter.addAction(WeightSensorService.EVENT_WEIGHT_SENSOR_BABY_OVERHEATING);
 
 		return intentFilter;
+	}
+
+	@Override
+	public void onClick(View view) {
+		NotificationManager.stop();
 	}
 	
 

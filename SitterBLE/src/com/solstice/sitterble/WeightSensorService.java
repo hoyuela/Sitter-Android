@@ -24,7 +24,7 @@ public class WeightSensorService extends Service {
 	public static String EVENT_WEIGHT_SENSOR_BABY_OVERHEATING = "EVENT_WEIGHT_SENSOR_BABY_OVERHEATING";
 
 	private int DISCONNECT_TIMEOUT = 10000;
-	private boolean weightPresent = true;
+	private boolean weightPresent = false;
 	private Handler handler = new Handler();
 	private Runnable disconnectTimout = new Runnable() {
 		
