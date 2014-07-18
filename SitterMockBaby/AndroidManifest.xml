@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.solstice.sitter"
+    package="com.sitter.sittermockbaby"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="19"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="19" />
+    
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
@@ -25,21 +26,11 @@
             </intent-filter>
         </activity>
         
-        <service
-            android:name="com.solstice.sitterble.BLEService"
-            android:enabled="true" />
+        <service android:name=".IBeaconService"/>
         
-         <service
-            android:name="com.solstice.sitterble.WeightSensorService"
-            android:enabled="true">
-        </service>
-        
-         <service android:name="com.solstice.sitterble.BluetoothProximityService"/>
-        
-         <service
-            android:name="com.solstice.sitterble.BLEService"
-            android:enabled="true">
-         </service>
+        <service android:enabled="true" android:exported="true" android:isolatedProcess="false" android:label="iBeacon" android:name="com.radiusnetworks.ibeacon.service.IBeaconService"/>
+
+    	<service android:enabled="true" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor"/>
     </application>
 
 </manifest>
