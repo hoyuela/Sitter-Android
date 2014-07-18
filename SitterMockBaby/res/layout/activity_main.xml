@@ -14,8 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="108dp"
-        android:layout_marginTop="43dp"
         android:text="Start Ranging" />
 
     <Button
@@ -24,8 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/startRangingButton"
         android:layout_below="@+id/startRangingButton"
-        android:layout_marginRight="80dp"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="17dp"
         android:text="Stop Ranging" />
 
 </RelativeLayout>
