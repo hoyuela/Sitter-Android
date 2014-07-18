@@ -1,20 +1,47 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="NavigationMenuAnimation">
+        <item name="android:windowEnterAnimation">@anim/navigation_menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/navigation_menu_exit</item>
+    </style> 
+    
+    <style name="ActivityMenuAnimation">
+        <item name="android:windowEnterAnimation">@anim/activity_menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/activity_menu_exit</item>
+    </style> 
 
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+    <style name="NavigationMenuItem">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_marginLeft">@dimen/nav_menu_margin_left</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    <style name="StyledDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="ActionBarHeaderStyle" >
+        <item name="android:background">#00000000</item>
+        <item name="android:textColor">@android:color/white</item>
+		<item name="android:textSize">@dimen/action_bar_font_size</item>
+		<item name="android:gravity">center_vertical</item>
+    </style>
+    
+    <style name="ActivityMenuItemText">    
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/menu_text_size</item>
+        <item name="android:layout_marginRight">@dimen/menu_item_margin</item>
+        <item name="android:layout_marginTop">@dimen/menu_item_margin</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+    
+     <style name="ActivityMenuItemButton">    
+     	<item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_margin">@dimen/menu_item_side_margin</item>
+     </style>
 </resources>
