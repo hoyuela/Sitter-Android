@@ -16,27 +16,27 @@
         android:layout_marginBottom="@dimen/action_bar_margin"
         android:layout_marginRight="10dp"
         android:contentDescription=""
-        android:background="@drawable/ic_launcher" />
+        android:background="@drawable/menuicon" />
 
     <com.sitter.widgets.ActivityMenuItem
         android:id="@+id/menu_call_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        custom:menuImage="@drawable/ic_launcher"
+        custom:menuImage="@drawable/addachild"
         custom:menuText="@string/add_child" />
 
     <com.sitter.widgets.ActivityMenuItem
         android:id="@+id/menu_note_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        custom:menuImage="@drawable/ic_launcher"
+        custom:menuImage="@drawable/settings_xhdpi"
         custom:menuText="@string/settings"/>
 
     <com.sitter.widgets.ActivityMenuItem
         android:id="@+id/menu_meeting_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        custom:menuImage="@drawable/ic_launcher"
+        custom:menuImage="@drawable/signout_xhdpi"
         custom:menuText="@string/sign_out" />
 
     <com.sitter.widgets.ActivityMenuItem
@@ -44,7 +44,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"       
         android:visibility="gone"
-        custom:menuImage="@drawable/ic_launcher"
+        custom:menuImage="@drawable/signout_xhdpi"
         custom:menuText="@string/sign_out" />
 
     <com.sitter.widgets.ActivityMenuItem  
